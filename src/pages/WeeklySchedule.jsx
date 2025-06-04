@@ -523,8 +523,11 @@ const WeeklySchedule = () => {
                     "&:hover": { backgroundColor: "action.hover" },
                   }}
                 >
-                  <Avatar sx={{ width: 32, height: 32 }}>
-                    {employee.firstName[0]}
+                  <Avatar
+                    src={employee.profileImageUrl}
+                    sx={{ width: 32, height: 32 }}
+                  >
+                    {!employee.profileImageUrl && employee.firstName[0]}
                   </Avatar>
                   <Typography variant="body2" sx={{ flex: 1 }}>
                     {employee.firstName} {employee.lastName[0]}.

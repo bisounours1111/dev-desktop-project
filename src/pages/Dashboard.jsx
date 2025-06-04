@@ -81,7 +81,10 @@ function Dashboard() {
         </Box>
 
         <IconButton onClick={handleProfileClick}>
-          <Avatar>{currentUser?.email?.[0]?.toUpperCase()}</Avatar>
+          <Avatar
+            src={currentUser?.profileImageUrl}
+            sx={{ width: 100, height: 100, mr: 2 }}
+          />
         </IconButton>
       </Box>
 

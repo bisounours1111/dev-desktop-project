@@ -5,6 +5,7 @@ const {
   Menu,
   nativeImage,
   ipcMain,
+  session,
 } = require("electron");
 const path = require("path");
 const Store = require("electron-store");
@@ -59,9 +60,10 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
       webSecurity: false,
+      enableRemoteModule: false,
       allowRunningInsecureContent: true,
     },
   });
@@ -132,6 +134,16 @@ app.whenReady().then(() => {
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.webContents.send("start-background-service");
   });
+
+  session.defaultSession.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      if (permission === "media") {
+        callback(true); // Autorise caméra/micro
+      } else {
+        callback(false);
+      }
+    }
+  );
 });
 
 // Gestion de la fermeture de l'application

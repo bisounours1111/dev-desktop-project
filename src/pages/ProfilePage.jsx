@@ -118,21 +118,19 @@ function ProfilePage() {
   const uploadImage = async (imageSrc) => {
     if (!currentUser) return;
 
-    const imageRef = ref(storage, `profileImages/${currentUser.uid}.jpg`);
-    await uploadString(imageRef, imageSrc, "data_url");
-    const downloadURL = await getDownloadURL(imageRef);
-
     const userDoc = doc(db, "users", currentUser.uid);
     await updateDoc(userDoc, {
-      profileImageUrl: downloadURL,
+      profileImageUrl: imageSrc,
     });
 
-    setProfileImage(downloadURL);
+    setProfileImage(imageSrc);
     setSuccess("Photo de profil mise à jour avec succès");
   };
 
   const captureImage = React.useCallback(async () => {
+    if (!webcamRef.current) return;
     const imageSrc = webcamRef.current.getScreenshot();
+    console.log(imageSrc); // Pour debug
     setShowCamera(false);
     await uploadImage(imageSrc);
   }, [webcamRef]);
@@ -140,9 +138,10 @@ function ProfilePage() {
   const renderProfileSection = () => (
     <Paper sx={{ p: 3, mb: 3 }}>
       <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-        {profileImage && (
-          <Avatar src={profileImage} sx={{ width: 100, height: 100, mr: 2 }} />
-        )}
+        <Avatar
+          src={profileImage || currentUser.profileImageUrl}
+          sx={{ width: 100, height: 100, mr: 2 }}
+        />
         <Box>
           <Typography variant="h6">
             {currentUser?.firstName && currentUser?.lastName
@@ -329,8 +328,7 @@ function ProfilePage() {
         audio={false}
         ref={webcamRef}
         screenshotFormat="image/jpeg"
-        width={320}
-        height={240}
+        videoConstraints={{ facingMode: "user" }}
       />
       <Box sx={{ mt: 2 }}>
         <Button variant="contained" onClick={captureImage} sx={{ mr: 2 }}>
