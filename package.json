@@ -72,7 +72,7 @@
   },
   "build": {
     "appId": "com.human-agement.app",
-    "productName": "Human'Agement",
+    "productName": "Human-Agement",
     "mac": {
       "category": "public.app-category.business",
       "target": [
