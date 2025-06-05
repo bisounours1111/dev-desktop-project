@@ -9,7 +9,6 @@ import {
   Box,
   Alert,
 } from "@mui/material";
-import { getDocs } from "firebase/firestore";
 import { forgotPassword } from "../requests";
 
 function ForgotPassword() {

@@ -14,12 +14,6 @@ import { ArrowBack } from "@mui/icons-material";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import Webcam from "react-webcam";
-import {
-  getStorage,
-  ref,
-  uploadString,
-  getDownloadURL,
-} from "firebase/storage";
 import { getFirestore, doc, updateDoc } from "firebase/firestore";
 
 function ProfilePage() {
@@ -42,7 +36,6 @@ function ProfilePage() {
   const [showCamera, setShowCamera] = React.useState(false);
   const [profileImage, setProfileImage] = React.useState(null);
 
-  const storage = getStorage();
   const db = getFirestore();
 
   const handleInputChange = (e) => {

@@ -275,7 +275,25 @@ export default function EmployeesList() {
                 <Typography
                   color="textSecondary"
                   gutterBottom
-                  onClick={() => navigator.clipboard.writeText(user.email)}
+                  onClick={async () => {
+                    try {
+                      await navigator.clipboard.writeText(user.email);
+                      setSuccess("Email copié dans le presse-papiers");
+                    } catch (err) {
+                      // Méthode alternative de copie
+                      const textArea = document.createElement("textarea");
+                      textArea.value = user.email;
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      try {
+                        document.execCommand("copy");
+                        setSuccess("Email copié dans le presse-papiers");
+                      } catch (err) {
+                        setError("Impossible de copier l'email");
+                      }
+                      document.body.removeChild(textArea);
+                    }
+                  }}
                   style={{ cursor: "pointer" }}
                 >
                   Email: {user.email}
