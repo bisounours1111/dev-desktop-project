@@ -35,11 +35,11 @@ const contextMenu = Menu.buildFromTemplate([
     },
   },
   {
-    label: "Démarrer avec Windows",
+    label: "Démarrer avec Mac",
     type: "checkbox",
-    checked: store.get("startWithWindows", false),
+    checked: store.get("startWithMac", false),
     click: (menuItem) => {
-      store.set("startWithWindows", menuItem.checked);
+      store.set("startWithMac", menuItem.checked);
       app.setLoginItemSettings({
         openAtLogin: menuItem.checked,
       });
