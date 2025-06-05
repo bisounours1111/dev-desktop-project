@@ -11,6 +11,7 @@ const path = require("path");
 const Store = require("electron-store");
 const isDev = require("electron-is-dev");
 const Sentry = require("@sentry/electron");
+const AutoLaunch = require("auto-launch");
 
 app.commandLine.appendSwitch("enable-features", "ElectronSerialChooser");
 app.commandLine.appendSwitch("disable-site-isolation-trials");
@@ -27,6 +28,11 @@ let mainWindow;
 let isQuitting = false;
 let tray = null;
 
+const autoLauncher = new AutoLaunch({
+  name: "Mon Application",
+  path: app.getPath("exe"),
+});
+
 const contextMenu = Menu.buildFromTemplate([
   {
     label: "Afficher l'application",
@@ -38,11 +44,13 @@ const contextMenu = Menu.buildFromTemplate([
     label: "Démarrer avec Mac",
     type: "checkbox",
     checked: store.get("startWithMac", false),
-    click: (menuItem) => {
+    click: async (menuItem) => {
       store.set("startWithMac", menuItem.checked);
-      app.setLoginItemSettings({
-        openAtLogin: menuItem.checked,
-      });
+      if (menuItem.checked) {
+        await autoLauncher.enable();
+      } else {
+        await autoLauncher.disable();
+      }
     },
   },
   { type: "separator" },
@@ -121,16 +129,20 @@ function createTray() {
 }
 
 // Gestion du démarrage de l'application
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   createWindow();
   createTray();
 
-  // Configuration du démarrage automatique
-  app.setLoginItemSettings({
-    openAtLogin: true,
-  });
+  const startWithMac = store.get("startWithMac", false);
 
-  // Démarrage du service en arrière-plan
+  if (!isDev) {
+    if (startWithMac) {
+      await autoLauncher.enable();
+    } else {
+      await autoLauncher.disable();
+    }
+  }
+
   mainWindow.webContents.on("did-finish-load", () => {
     mainWindow.webContents.send("start-background-service");
   });
@@ -138,7 +150,7 @@ app.whenReady().then(() => {
   session.defaultSession.setPermissionRequestHandler(
     (webContents, permission, callback) => {
       if (permission === "media") {
-        callback(true); // Autorise caméra/micro
+        callback(true);
       } else {
         callback(false);
       }
